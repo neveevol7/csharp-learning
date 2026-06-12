@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>C# 快速上手 — 面向产品经理的学习平台</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/neo.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.65.13/codemirror.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.65.13/theme/neo.min.css">
 <style>
 :root {
   --ms-blue: #0078d4;
@@ -18,6 +18,8 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+[v-cloak] { display: none !important; }
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: var(--ms-text);
@@ -25,9 +27,9 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-/* Header */
 header {
   height: 48px;
   background-color: var(--ms-dark-gray);
@@ -38,19 +40,18 @@ header {
   font-size: 14px;
   font-weight: 600;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .logo-section { display: flex; align-items: center; gap: 10px; }
 .logo-box { width: 18px; height: 18px; background-color: var(--ms-blue); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; border-radius: 2px; }
 
-/* Layout */
 .main-container {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* Sidebar */
 aside {
   width: 280px;
   background-color: var(--ms-sidebar-bg);
@@ -94,7 +95,6 @@ aside {
   color: #605e5c;
 }
 
-/* Content Area */
 main {
   flex: 1;
   display: flex;
@@ -122,7 +122,6 @@ main {
   margin: 20px 0;
 }
 
-/* Editor Panel */
 .editor-panel {
   flex: 1;
   background-color: #fff;
@@ -180,68 +179,68 @@ main {
 }
 
 @media (max-width: 1200px) {
-  .main-container { flex-direction: column; }
-  aside { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--ms-border); }
   main { flex-direction: column; }
-  .editor-panel { height: 500px; flex: none; border-left: none; border-top: 1px solid var(--ms-border); }
+  .editor-panel { height: 400px; flex: none; border-left: none; border-top: 1px solid var(--ms-border); }
 }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-section">
-    <div class="logo-box">C#</div>
-    <span>Microsoft C# 学习平台 - 快速上手版</span>
-  </div>
-  <div>
-    <span>当前进度: Day <span id="progress-day">1</span> / 10</span>
-  </div>
-</header>
-
-<div id="app" class="main-container">
-  <aside>
-    <div class="sidebar-header">学习目录</div>
-    <div 
-      v-for="(title, index) in dayTitles" 
-      :key="index"
-      :class="['nav-item', { active: currentDay === index + 1 }]"
-      @click="selectDay(index + 1)"
-    >
-      <span class="day-badge">Day {{ index + 1 }}</span>
-      <span>{{ title }}</span>
+<div id="app" v-cloak style="height: 100vh; display: flex; flex-direction: column;">
+  <header>
+    <div class="logo-section">
+      <div class="logo-box">C#</div>
+      <span>Microsoft C# 学习平台 - 快速上手版</span>
     </div>
-  </aside>
+    <div>
+      <span>当前进度: Day {{ currentDay }} / 10</span>
+    </div>
+  </header>
 
-  <main>
-    <div class="article-container" v-html="currentLessonContent"></div>
-
-    <div class="editor-panel">
-      <div class="editor-header">
-        <span style="font-weight: 600; font-size: 14px;">交互式演练区</span>
-        <div style="display: flex; gap: 8px;">
-          <button class="run-btn" @click="runCode" :disabled="isRunning">
-            <span v-if="!isRunning">▶ 运行</span>
-            <span v-else>⏳ 运行中...</span>
-          </button>
-          <button style="border:1px solid #8a8886; background:none; padding:4px 12px; cursor:pointer;" @click="resetCode">重置</button>
-        </div>
+  <div class="main-container">
+    <aside>
+      <div class="sidebar-header">学习目录</div>
+      <div 
+        v-for="(title, index) in dayTitles" 
+        :key="index"
+        :class="['nav-item', { active: currentDay === index + 1 }]"
+        @click="selectDay(index + 1)"
+      >
+        <span class="day-badge">Day {{ index + 1 }}</span>
+        <span>{{ title }}</span>
       </div>
-      
-      <textarea id="editor"></textarea>
-      
-      <div class="output-area">{{ outputText || '点击“运行”查看代码输出结果...' }}</div>
-      <div class="status-bar" :style="{color: statusColor}">{{ statusMessage }}</div>
-    </div>
-  </main>
+    </aside>
+
+    <main>
+      <div class="article-container" v-html="currentLessonContent"></div>
+
+      <div class="editor-panel">
+        <div class="editor-header">
+          <span style="font-weight: 600; font-size: 14px;">交互式演练区</span>
+          <div style="display: flex; gap: 8px;">
+            <button class="run-btn" @click="runCode" :disabled="isRunning">
+              <span v-if="!isRunning">▶ 运行</span>
+              <span v-else>⏳ 运行中...</span>
+            </button>
+            <button style="border:1px solid #8a8886; background:none; padding:4px 12px; cursor:pointer;" @click="resetCode">重置</button>
+          </div>
+        </div>
+        
+        <textarea id="editor"></textarea>
+        
+        <div class="output-area">{{ outputText || '点击“运行”查看代码输出结果...' }}</div>
+        <div class="status-bar" :style="{color: statusColor}">{{ statusMessage }}</div>
+      </div>
+    </main>
+  </div>
 </div>
 
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/3.3.4/vue.global.prod.js"></script>
+<script src="https://cdn.staticfile.org/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdn.staticfile.org/codemirror/5.65.13/mode/clike/clike.min.js"></script>
 
 <script>
-const { createApp, ref, computed, onMounted, watch } = Vue;
+const { createApp, ref, computed, onMounted } = Vue;
 
 const dayTitles = [
   "Hello World & 第一个程序",
@@ -257,159 +256,25 @@ const dayTitles = [
 ];
 
 const lessonContent = {
-  1: `
-    <h1>Day 1 — Hello World & 基础语法</h1>
-    <p>欢迎来到 C# 开发者的世界。作为产品经理，理解代码的第一步是理解它的<strong>入口</strong>和<strong>输出</strong>。</p>
-    
-    <div class="tip-box">
-      <strong>PM 视角：</strong> Main() 方法就像是产品的“首页”，是用户（计算机）点击进入后的第一个触点。
-    </div>
-
-    <h2>核心知识点</h2>
-    <h3>1. 命名空间 (Namespace)</h3>
-    <p><code>using System;</code> 告诉电脑我们要用微软提供的基础工具箱。就像你在文档中引用某个标准库一样。</p>
-    
-    <h3>2. 输出内容</h3>
-    <p><code>Console.WriteLine("...");</code> 是最常用的命令，它在屏幕上打印一行内容并换行。</p>
-
-    <h3>3. 分号与括号</h3>
-    <ul>
-      <li>每个指令（语句）必须以分号 <code>;</code> 结尾，像句号一样。</li>
-      <li>花括号 <code>{}</code> 用于把相关的代码打包在一起。</li>
-    </ul>
-
-    <h2>动手试试</h2>
-    <p>在右侧编辑器中，尝试修改引号里的文字，看看运行结果会有什么变化。</p>
-  `,
-  2: `
-    <h1>Day 2 — 变量与基本数据类型</h1>
-    <p>程序不仅要“说”，还要“记”。变量就是代码里的存储格子。</p>
-
-    <h2>PM 必知的数据类型</h2>
-    <ul>
-      <li><strong>int</strong> (整数)：计数、ID、数量。</li>
-      <li><strong>double</strong> (小数)：价格、评分、比例。</li>
-      <li><strong>string</strong> (字符串)：用户名、描述、JSON 字符串。</li>
-      <li><strong>bool</strong> (布尔值)：开关状态、是否已读。</li>
-    </ul>
-
-    <div class="tip-box">
-      <strong>关键概念：强类型</strong><br>
-      C# 要求你必须明确告诉它格子里装的是什么。你不能把“价格”装进“开关”格子里。
-    </div>
-
-    <h2>字符串插值</h2>
-    <p>使用 <code>$</code> 符号，可以轻松地把变量放进一段话里：<br>
-    <code>$"你好，{name}!"</code></p>
-  `,
-  3: `
-    <h1>Day 3 — 控制流：逻辑分支</h1>
-    <p>没有逻辑的代码只是流水账。If 语句让程序能够根据条件“做决定”。</p>
-
-    <h2>If...Else 结构</h2>
-    <p>这和你在画产品流程图时的判定节点一模一样：</p>
-    <pre style="background:#f4f4f4; padding:10px;">
-if (用户已登录) {
-    显示首页;
-} else {
-    跳转登录页;
-}</pre>
-
-    <h2>Switch 语句</h2>
-    <p>当你有多个平行的选项（比如：订单状态：已支付、待发货、已完成）时，Switch 比一堆 If 更好用。</p>
-  `,
-  // 后续内容在此扩展...
-  4: `<h1>Day 4 — 循环与数组</h1><p>数组是列表。循环是自动化处理列表。这在处理多条业务数据时非常关键。</p>`,
+  1: `<h1>Day 1 — Hello World & 基础语法</h1><p>欢迎来到 C# 开发者的世界。作为产品经理，理解代码的第一步是理解它的<strong>入口</strong>和<strong>输出</strong>。</p><div class="tip-box"><strong>PM 视角：</strong> Main() 方法就像是产品的“首页”，是用户（计算机）点击进入后的第一个触点。</div><h2>核心知识点</h2><h3>1. 命名空间 (Namespace)</h3><p><code>using System;</code> 告诉电脑我们要用微软提供的基础工具箱。</p><h3>2. 输出内容</h3><p><code>Console.WriteLine("...");</code> 是最常用的命令，它在屏幕上打印一行内容并换行。</p><h3>3. 分号与括号</h3><ul><li>每个指令必须以分号 <code>;</code> 结尾。</li><li>花括号 <code>{}</code> 用于把相关的代码打包在一起。</li></ul><h2>动手试试</h2><p>在右侧编辑器中，尝试修改引号里的文字，看看运行结果会有什么变化。</p>`,
+  2: `<h1>Day 2 — 变量与基本数据类型</h1><p>程序不仅要“说”，还要“记”。变量就是代码里的存储格子。</p><h2>PM 必知的数据类型</h2><ul><li><strong>int</strong> (整数)：计数、ID、数量。</li><li><strong>double</strong> (小数)：价格、评分、比例。</li><li><strong>string</strong> (字符串)：用户名、描述。</li><li><strong>bool</strong> (布尔值)：开关状态、是否已读。</li></ul><div class="tip-box"><strong>关键概念：强类型</strong><br>C# 要求你必须明确告诉它格子里装的是什么。</div>`,
+  3: `<h1>Day 3 — 控制流：逻辑分支</h1><p>If 语句让程序能够根据条件“做决定”。</p><h2>If...Else 结构</h2><pre style="background:#f4f4f4; padding:10px;">if (用户已登录) { 显示首页; } else { 跳转登录页; }</pre><h2>Switch 语句</h2><p>当你有多个平行的选项时，Switch 比一堆 If 更好用。</p>`,
+  4: `<h1>Day 4 — 循环与数组</h1><p>数组是列表。循环是自动化处理列表。</p>`,
   5: `<h1>Day 5 — 方法：逻辑的封装</h1><p>把常用的逻辑写成方法，就像定义一个公共组件，随处调用。</p>`,
-  6: `<h1>Day 6 — 类与对象</h1><p>理解 OOP（面向对象）是读懂微软项目的核心。万物皆对象。</p>`,
+  6: `<h1>Day 6 — 类与对象</h1><p>理解 OOP（面向对象）是读懂微软项目的核心。</p>`,
   7: `<h1>Day 7 — 属性与权限</h1><p>Public 和 Private 的区别，就是 API 对内还是对外暴露的区别。</p>`,
-  8: `<h1>Day 8 — LINQ：数据查询的神器</h1><p>这是 C# 最强的部分，让你像写 SQL 或操作 Excel 过滤器一样过滤数据。</p>`,
+  8: `<h1>Day 8 — LINQ：数据查询的神器</h1><p>让你像操作 Excel 过滤器一样过滤数据。</p>`,
   9: `<h1>Day 9 — 异常处理</h1><p>程序挂了怎么办？Try-Catch 就像是容灾备份方案。</p>`,
-  10: `<h1>Day 10 — 异步编程</h1><p>现代应用不能卡顿。Async 和 Await 让程序能同时处理多项任务。</p>`
+  10: `<h1>Day 10 — 异步编程</h1><p>Async 和 Await 让程序能同时处理多项任务。</p>`
 };
 
 const codeTemplates = {
-  1: `using System;
-
-public class Program {
-    public static void Main() {
-        Console.WriteLine("Hello World!");
-        Console.WriteLine("欢迎来到 C# 学习之旅。");
-    }
-}`,
-  2: `using System;
-
-public class Program {
-    public static void Main() {
-        string productName = "智能手表";
-        double price = 1299.5;
-        int stock = 50;
-        bool isAvailable = true;
-
-        Console.WriteLine($"产品: {productName}");
-        Console.WriteLine($"价格: {price} 元");
-        Console.WriteLine($"库存: {stock}");
-        Console.WriteLine($"是否有货: {isAvailable}");
-    }
-}`,
-  3: `using System;
-
-public class Program {
-    public static void Main() {
-        int score = 85;
-
-        if (score >= 90) {
-            Console.WriteLine("等级: A (优秀)");
-        } else if (score >= 80) {
-            Console.WriteLine("等级: B (良好)");
-        } else {
-            Console.WriteLine("等级: C (及格)");
-        }
-    }
-}`,
-  4: `using System;
-
-public class Program {
-    public static void Main() {
-        string[] users = { "Alice", "Bob", "Charlie" };
-        
-        foreach (var user in users) {
-            Console.WriteLine($"欢迎用户: {user}");
-        }
-    }
-}`,
-  5: `using System;
-
-public class Program {
-    public static void Main() {
-        double result = CalculateDiscount(100, 0.8);
-        Console.WriteLine($"折后价: {result}");
-    }
-
-    public static double CalculateDiscount(double original, double rate) {
-        return original * rate;
-    }
-}`,
-  6: `using System;
-
-public class User {
-    public string Name { get; set; }
-    public void SayHello() {
-        Console.WriteLine($"Hello, I am {Name}");
-    }
-}
-
-public class Program {
-    public static void Main() {
-        User u = new User();
-        u.Name = "Neal";
-        u.SayHello();
-    }
-}`,
-  7: `// 这里是第 7 天的内容...`,
-  8: `// 这里是第 8 天的内容...`,
-  9: `// 这里是第 9 天的内容...`,
-  10: `// 这里是第 10 天的内容...`
+  1: "using System;\n\npublic class Program {\n    public static void Main() {\n        Console.WriteLine(\"Hello World!\");\n        Console.WriteLine(\"欢迎来到 C# 学习之旅。\");\n    \n}\n}",
+  2: "using System;\n\npublic class Program {\n    public static void Main() {\n        string productName = \"智能手表\";\n        double price = 1299.5;\n        int stock = 50;\n        bool isAvailable = true;\n\n        Console.WriteLine($\"产品: {productName}\");\n        Console.WriteLine($\"价格: {price} 元\");\n        Console.WriteLine($\"库存: {stock}\");\n        Console.WriteLine($\"是否有货: {isAvailable}\");\n    }\n}",
+  3: "using System;\n\npublic class Program {\n    public static void Main() {\n        int score = 85;\n\n        if (score >= 90) {\n            Console.WriteLine(\"等级: A (优秀)\");\n        } else if (score >= 80) {\n            Console.WriteLine(\"等级: B (良好)\");\n        } else {\n            Console.WriteLine(\"等级: C (及格)\");\n        }\n    }\n}",
+  4: "using System;\n\npublic class Program {\n    public static void Main() {\n        string[] users = { \"Alice\", \"Bob\", \"Charlie\" };\n        foreach (var user in users) {\n            Console.WriteLine($\"欢迎用户: {user}\");\n        }\n    }\n}",
+  5: "using System;\n\npublic class Program {\n    public static void Main() {\n        double result = CalculateDiscount(100, 0.8);\n        Console.WriteLine($\"折后价: {result}\");\n    }\n    public static double CalculateDiscount(double original, double rate) {\n        return original * rate;\n    }\n}",
+  6: "using System;\n\npublic class User {\n    public string Name { get; set; }\n    public void SayHello() {\n        Console.WriteLine($\"Hello, I am {Name}\");\n    }\n}\n\npublic class Program {\n    public static void Main() {\n        User u = new User();\n        u.Name = \"Neal\";\n        u.SayHello();\n    }\n}"
 };
 
 createApp({
@@ -430,7 +295,6 @@ createApp({
       if (editor) editor.setValue(code.value);
       outputText.value = '';
       statusMessage.value = '';
-      document.getElementById('progress-day').innerText = day;
     };
 
     const runCode = async () => {
@@ -438,16 +302,13 @@ createApp({
       statusMessage.value = '正在通过 JDoodle 编译运行...';
       statusColor.value = '#0078d4';
       outputText.value = '';
-
       try {
-        const response = await fetch('http://localhost:5001/api/execute', {
+        const response = await fetch('/api/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ script: code.value, language: 'csharp', versionIndex: '3' })
         });
-
-        if (!response.ok) throw new Error('网络请求失败，请确保 proxy.py 已启动');
-
+        if (!response.ok) throw new Error('网络请求失败');
         const result = await response.json();
         if (result.output) {
           outputText.value = result.output;
@@ -457,12 +318,10 @@ createApp({
           outputText.value = result.error;
           statusMessage.value = '编译错误';
           statusColor.value = '#a4262c';
-        } else {
-          statusMessage.value = '无输出内容';
         }
       } catch (err) {
-        outputText.value = `错误: ${err.message}\n\n提示: 请确保在后台运行了 python3 proxy.py`;
-        statusMessage.value = '连接代理失败';
+        outputText.value = '错误: ' + err.message;
+        statusMessage.value = '连接失败';
         statusColor.value = '#a4262c';
       } finally {
         isRunning.value = false;

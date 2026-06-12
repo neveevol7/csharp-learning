@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import os
 import requests
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 # Load environment variables from .env file
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.')
+CORS(app) # Enable CORS for all routes
 
 JD_API = 'https://api.jdoodle.com/v1/execute'
 
-@app.after_request
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-    return response
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
 @app.route('/api/execute', methods=['POST', 'OPTIONS'])
 def execute():
