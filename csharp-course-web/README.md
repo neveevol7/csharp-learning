@@ -106,6 +106,47 @@ namespace CSharpLearning {
 - **API 限制**：JDoodle 免费版本有请求限制，如果频繁出错可考虑自建后端
 - **跨域问题**：某些浏览器可能因为跨域限制而无法调用 API，此时可启动本地 HTTP 服务器
 
+## 🔐 本地代理（可选，推荐用于稳定执行）
+
+浏览器直接调用 JDoodle 可能遇到 CORS 或网络限制。推荐在本地运行一个小代理，将浏览器请求转发到 JDoodle。
+
+1. 复制示例环境文件并填写你的 JDoodle 凭证（不要提交这些凭证）：
+
+```bash
+cd /Users/yu/CSharpLearning/csharp-course-web
+cp .env.example .env
+# 编辑 .env，填入 JD_CLIENT_ID 和 JD_CLIENT_SECRET
+```
+
+2. 推荐使用虚拟环境并安装依赖：
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install flask requests python-dotenv
+```
+
+3. 启动代理：
+
+```bash
+export JD_CLIENT_ID=你的_jdoodle_client_id
+export JD_CLIENT_SECRET=你的_jdoodle_client_secret
+export PORT=5000   # 可选
+python3 proxy.py
+```
+
+4. 在另一个终端启动静态服务器并打开页面：
+
+```bash
+# 在 web 目录启动
+cd /Users/yu/CSharpLearning/csharp-course-web
+python3 -m http.server 8000
+# 打开 http://localhost:8000
+```
+
+代理会在收到请求时将代码转发给 JDoodle 并返回结果到前端页面。若你不想配置代理，页面仍然可以通过直接网络请求 JDoodle，但可能因 CORS 或 JDoodle 限制失败。
+
 ## 🚀 后续优化建议
 
 - [ ] 添加代码自动保存到浏览器本地存储
