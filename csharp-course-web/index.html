@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C# 快速上手 — 面向产品经理的学习平台</title>
+<title>C# 快速上手 — 面向产品经理的互动学习平台</title>
 <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.65.13/codemirror.min.css">
 <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.65.13/theme/neo.min.css">
 <style>
@@ -14,10 +14,11 @@
   --ms-border: #e1dfdd;
   --ms-text: #323130;
   --ms-sidebar-bg: #faf9f8;
+  --ms-success: #107c10;
+  --ms-error: #a4262c;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 [v-cloak] { display: none !important; }
 
 body {
@@ -46,14 +47,10 @@ header {
 .logo-section { display: flex; align-items: center; gap: 10px; }
 .logo-box { width: 18px; height: 18px; background-color: var(--ms-blue); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; border-radius: 2px; }
 
-.main-container {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
+.main-container { display: flex; flex: 1; overflow: hidden; }
 
 aside {
-  width: 280px;
+  width: 260px;
   background-color: var(--ms-sidebar-bg);
   border-right: 1px solid var(--ms-border);
   display: flex;
@@ -61,31 +58,10 @@ aside {
   overflow-y: auto;
 }
 
-.sidebar-header {
-  padding: 20px;
-  font-size: 16px;
-  font-weight: 700;
-  border-bottom: 1px solid var(--ms-border);
-}
-
-.nav-item {
-  padding: 12px 20px;
-  cursor: pointer;
-  border-left: 4px solid transparent;
-  transition: all 0.2s;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+.sidebar-header { padding: 20px; font-size: 14px; font-weight: 700; border-bottom: 1px solid var(--ms-border); color: #605e5c; text-transform: uppercase; }
+.nav-item { padding: 12px 20px; cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s; font-size: 13px; }
 .nav-item:hover { background-color: #edebe9; }
-.nav-item.active {
-  background-color: #fff;
-  border-left-color: var(--ms-blue);
-  font-weight: 600;
-  color: var(--ms-blue);
-}
+.nav-item.active { background-color: #fff; border-left-color: var(--ms-blue); font-weight: 600; color: var(--ms-blue); }
 
 .nav-item .day-badge {
   font-size: 11px;
@@ -95,93 +71,37 @@ aside {
   color: #605e5c;
 }
 
-main {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
+main { flex: 1; display: flex; overflow: hidden; }
 
-.article-container {
-  flex: 1.2;
-  padding: 40px 60px;
-  overflow-y: auto;
-  line-height: 1.6;
-}
+.article-container { flex: 1.2; padding: 40px; overflow-y: auto; border-right: 1px solid var(--ms-border); }
+.article-container h1 { font-size: 28px; margin-bottom: 20px; color: #242424; }
+.article-container h2 { font-size: 20px; margin: 24px 0 12px; border-bottom: 1px solid var(--ms-border); padding-bottom: 6px; }
+.article-container h3 { font-size: 16px; margin: 18px 0 10px; color: var(--ms-blue); }
+.article-container p { margin-bottom: 14px; font-size: 14px; line-height: 1.6; }
+.article-container code { background: #f3f2f1; padding: 2px 4px; border-radius: 3px; font-family: monospace; }
+.article-container pre { background: #f3f2f1; padding: 12px; border-radius: 4px; margin: 10px 0; font-size: 13px; overflow-x: auto; }
 
-.article-container h1 { font-size: 32px; margin-bottom: 24px; color: #242424; }
-.article-container h2 { font-size: 24px; margin: 32px 0 16px; border-bottom: 1px solid var(--ms-border); padding-bottom: 8px; }
-.article-container h3 { font-size: 18px; margin: 24px 0 12px; color: var(--ms-blue); }
-.article-container p { margin-bottom: 16px; font-size: 15px; }
-.article-container ul { margin-bottom: 16px; padding-left: 24px; }
-.article-container li { margin-bottom: 8px; }
+.exercise-section { margin-top: 30px; border-top: 2px solid var(--ms-blue); padding-top: 20px; }
+.exercise-card { background: #fff; border: 1px solid var(--ms-border); border-radius: 4px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+.exercise-card:hover { border-color: var(--ms-blue); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.exercise-card.active { border-left: 4px solid var(--ms-blue); background: #f9f9f9; }
+.exercise-card h4 { font-size: 14px; margin-bottom: 5px; }
+.exercise-card p { font-size: 12px; color: #666; margin: 0; }
 
-.tip-box {
-  background-color: #f3f9fd;
-  border-left: 4px solid var(--ms-blue);
-  padding: 16px;
-  margin: 20px 0;
-}
+.editor-panel { flex: 1; display: flex; flex-direction: column; background: #fff; }
+.editor-header { padding: 10px 20px; background: #faf9f8; border-bottom: 1px solid var(--ms-border); display: flex; justify-content: space-between; align-items: center; }
+.run-btn { background: var(--ms-blue); color: #fff; border: none; padding: 6px 16px; border-radius: 2px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.run-btn:hover { background: #005a9e; }
+.run-btn:disabled { background: #c8c6c4; }
 
-.editor-panel {
-  flex: 1;
-  background-color: #fff;
-  border-left: 1px solid var(--ms-border);
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 16px;
-}
+.CodeMirror { flex: 1; font-family: 'Cascadia Code', monospace; font-size: 14px; }
 
-.editor-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.run-btn {
-  background-color: var(--ms-blue);
-  color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 2px;
-  cursor: pointer;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.run-btn:hover { background-color: #005a9e; }
-.run-btn:disabled { background-color: #c8c6c4; cursor: not-allowed; }
-
-.CodeMirror {
-  border: 1px solid var(--ms-border);
-  height: auto;
-  flex: 1;
-  font-family: 'Cascadia Code', 'Consolas', monospace;
-  font-size: 14px;
-}
-
-.output-area {
-  height: 180px;
-  background-color: #f3f2f1;
-  border: 1px solid var(--ms-border);
-  padding: 12px;
-  font-family: monospace;
-  font-size: 13px;
-  white-space: pre-wrap;
-  overflow-y: auto;
-}
-
-.status-bar {
-  font-size: 12px;
-  color: #605e5c;
-}
-
-@media (max-width: 1200px) {
-  main { flex-direction: column; }
-  .editor-panel { height: 400px; flex: none; border-left: none; border-top: 1px solid var(--ms-border); }
-}
+.output-container { height: 250px; border-top: 1px solid var(--ms-border); display: flex; flex-direction: column; background: #f3f2f1; }
+.output-header { padding: 8px 20px; font-size: 12px; font-weight: 700; color: #605e5c; border-bottom: 1px solid var(--ms-border); display: flex; justify-content: space-between; }
+.output-content { flex: 1; padding: 12px 20px; font-family: monospace; font-size: 13px; white-space: pre-wrap; overflow-y: auto; }
+.validation-badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; color: #fff; }
+.success-bg { background: var(--ms-success); }
+.error-bg { background: var(--ms-error); }
 </style>
 </head>
 <body>
@@ -190,46 +110,61 @@ main {
   <header>
     <div class="logo-section">
       <div class="logo-box">C#</div>
-      <span>Microsoft C# 学习平台 - 快速上手版</span>
+      <span>C# 快速上手 - 互动学习平台</span>
     </div>
-    <div>
-      <span>当前进度: Day {{ currentDay }} / 10</span>
-    </div>
+    <div style="font-size: 12px; opacity: 0.8;">Day {{ currentDay }} / 10</div>
   </header>
 
   <div class="main-container">
     <aside>
-      <div class="sidebar-header">学习目录</div>
+      <div class="sidebar-header">学习章节</div>
       <div 
-        v-for="(title, index) in dayTitles" 
+        v-for="(day, index) in syllabus" 
         :key="index"
         :class="['nav-item', { active: currentDay === index + 1 }]"
         @click="selectDay(index + 1)"
       >
-        <span class="day-badge">Day {{ index + 1 }}</span>
-        <span>{{ title }}</span>
+        {{ index + 1 }}. {{ day.title }}
       </div>
     </aside>
 
     <main>
-      <div class="article-container" v-html="currentLessonContent"></div>
+      <div class="article-container">
+        <div v-html="currentContent"></div>
+
+        <div class="exercise-section" v-if="currentExercises.length">
+          <h3>✍️ 编程练习题</h3>
+          <p>点击下方题目开始练习，系统将自动校验你的输出结果。</p>
+          <div 
+            v-for="(ex, i) in currentExercises" 
+            :key="i"
+            :class="['exercise-card', { active: activeExerciseIndex === i }]"
+            @click="loadExercise(i)"
+          >
+            <h4>练习 {{ i + 1 }}: {{ ex.title }}</h4>
+            <p>{{ ex.desc }}</p>
+          </div>
+        </div>
+      </div>
 
       <div class="editor-panel">
         <div class="editor-header">
-          <span style="font-weight: 600; font-size: 14px;">交互式演练区</span>
-          <div style="display: flex; gap: 8px;">
-            <button class="run-btn" @click="runCode" :disabled="isRunning">
-              <span v-if="!isRunning">▶ 运行</span>
-              <span v-else>⏳ 运行中...</span>
-            </button>
-            <button style="border:1px solid #8a8886; background:none; padding:4px 12px; cursor:pointer;" @click="resetCode">重置</button>
-          </div>
+          <span style="font-size: 12px; font-weight: 700;">{{ activeExerciseTitle }}</span>
+          <button class="run-btn" @click="runCode" :disabled="isRunning">
+            {{ isRunning ? '⏳ 运行中...' : '▶ 运行并校验' }}
+          </button>
         </div>
-        
         <textarea id="editor"></textarea>
         
-        <div class="output-area">{{ outputText || '点击“运行”查看代码输出结果...' }}</div>
-        <div class="status-bar" :style="{color: statusColor}">{{ statusMessage }}</div>
+        <div class="output-container">
+          <div class="output-header">
+            <span>控制台输出</span>
+            <span v-if="validationStatus" :class="['validation-badge', validationStatus === 'Correct' ? 'success-bg' : 'error-bg']">
+              {{ validationStatus === 'Correct' ? '🎉 挑战成功！' : '❌ 结果不匹配，再试一次' }}
+            </span>
+          </div>
+          <div class="output-content">{{ outputText || '点击运行查看结果...' }}</div>
+        </div>
       </div>
     </main>
   </div>
@@ -242,123 +177,171 @@ main {
 <script>
 const { createApp, ref, computed, onMounted } = Vue;
 
-const dayTitles = [
-  "Hello World & 第一个程序",
-  "变量与基本数据类型",
-  "控制流：If 与 Switch",
-  "循环与数组：批量处理",
-  "方法：封装逻辑",
-  "类与对象：面向对象基础",
-  "属性与访问修饰符",
-  "集合与 LINQ 数据查询",
-  "异常处理与稳健编程",
-  "异步编程：Async/Await"
+const syllabus = [
+  {
+    title: "世界，您好！(Hello World)",
+    content: `
+      <h1>Day 1: 走进 C# 的世界</h1>
+      <p>欢迎开始 C# 学习之旅。作为一种由微软开发的语言，C# 的设计非常严谨且逻辑清晰。</p>
+
+      <h2>1. 您的第一个 C# 程序</h2>
+      <p>参考 Microsoft Learn 的标准格式，一个完整的程序通常包含以下部分：</p>
+      <pre>
+using System; // 引用基础工具包
+
+namespace HelloWorldApp // 项目的“名称空间”，用于组织代码
+{
+    class Program // 定义一个“类”，是代码的容器
+    {
+        static void Main() // 程序的入口点，电脑从这里开始执行
+        {
+            // 在屏幕上输出一行字
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}</pre>
+
+      <h3>关键点解析：</h3>
+      <ul>
+        <li><code>using System;</code>: 告诉系统我们要用微软的基础类库。</li>
+        <li><code>Console.WriteLine</code>: <code>Console</code> 是类（类比：电视机），<code>WriteLine</code> 是方法（类比：换台）。</li>
+        <li><strong>分号 (;)</strong>: 每一行指令结束时必须加分号。</li>
+      </ul>
+
+      <h2>2. 输出特殊内容：转义字符</h2>
+      <p>有时候，我们需要输出一些特殊的格式，比如换行或者带引号的话。这时需要用到 <strong>转义字符 (Escape Characters)</strong>：</p>
+      <ul>
+        <li><code>\\n</code>: 强制<strong>换行</strong>。</li>
+        <li><code>\\t</code>: 水平<strong>制表符</strong> (就像按了一下 Tab 键，用于对齐文本)。</li>
+        <li><code>\\"</code>: 在引号内部输出一个<strong>双引号</strong>本身。</li>
+      </ul>
+      <p><strong>示例：</strong> <code>Console.WriteLine("第一行\\n第二行");</code> 会显示为两行。</p>
+    `,
+    exercises: [
+      {
+        title: "基础打印练习",
+        desc: "输出文字：'C# 学习第一天！'",
+        template: 'using System;\n\nclass Program {\n    static void Main() {\n        // 在这里编写代码\n        \n    }\n}',
+        expected: "C# 学习第一天！"
+      },
+      {
+        title: "转义字符挑战",
+        desc: "使用 \\n 输出两行文字：第一行显示 '你好'，第二行显示 '世界'。",
+        template: 'using System;\n\nclass Program {\n    static void Main() {\n        // 使用 \\n 来换行\n        \n    }\n}',
+        expected: "你好\n世界"
+      },
+      {
+        title: "制表符对齐挑战",
+        desc: "使用 \\t 输出两列数据：'姓名' 和 '职业'，中间用制表符隔开。输出结果应为：'姓名\\t职业'",
+        template: 'using System;\n\nclass Program {\n    static void Main() {\n        // 使用 \\t 对齐\n        \n    }\n}',
+        expected: "姓名\t职业"
+      }
+    ]
+  },
+  {
+    title: "变量与存储数据",
+    content: "<h1>Day 2: 变量与数据类型</h1><p>内容正在根据您的反馈进行深度优化中...</p>",
+    exercises: []
+  }
 ];
-
-const lessonContent = {
-  1: `<h1>Day 1 — Hello World & 基础语法</h1><p>欢迎来到 C# 开发者的世界。作为产品经理，理解代码的第一步是理解它的<strong>入口</strong>和<strong>输出</strong>。</p><div class="tip-box"><strong>PM 视角：</strong> Main() 方法就像是产品的“首页”，是用户（计算机）点击进入后的第一个触点。</div><h2>核心知识点</h2><h3>1. 命名空间 (Namespace)</h3><p><code>using System;</code> 告诉电脑我们要用微软提供的基础工具箱。</p><h3>2. 输出内容</h3><p><code>Console.WriteLine("...");</code> 是最常用的命令，它在屏幕上打印一行内容并换行。</p><h3>3. 分号与括号</h3><ul><li>每个指令必须以分号 <code>;</code> 结尾。</li><li>花括号 <code>{}</code> 用于把相关的代码打包在一起。</li></ul><h2>动手试试</h2><p>在右侧编辑器中，尝试修改引号里的文字，看看运行结果会有什么变化。</p>`,
-  2: `<h1>Day 2 — 变量与基本数据类型</h1><p>程序不仅要“说”，还要“记”。变量就是代码里的存储格子。</p><h2>PM 必知的数据类型</h2><ul><li><strong>int</strong> (整数)：计数、ID、数量。</li><li><strong>double</strong> (小数)：价格、评分、比例。</li><li><strong>string</strong> (字符串)：用户名、描述。</li><li><strong>bool</strong> (布尔值)：开关状态、是否已读。</li></ul><div class="tip-box"><strong>关键概念：强类型</strong><br>C# 要求你必须明确告诉它格子里装的是什么。</div>`,
-  3: `<h1>Day 3 — 控制流：逻辑分支</h1><p>If 语句让程序能够根据条件“做决定”。</p><h2>If...Else 结构</h2><pre style="background:#f4f4f4; padding:10px;">if (用户已登录) { 显示首页; } else { 跳转登录页; }</pre><h2>Switch 语句</h2><p>当你有多个平行的选项时，Switch 比一堆 If 更好用。</p>`,
-  4: `<h1>Day 4 — 循环与数组</h1><p>数组是列表。循环是自动化处理列表。</p>`,
-  5: `<h1>Day 5 — 方法：逻辑的封装</h1><p>把常用的逻辑写成方法，就像定义一个公共组件，随处调用。</p>`,
-  6: `<h1>Day 6 — 类与对象</h1><p>理解 OOP（面向对象）是读懂微软项目的核心。</p>`,
-  7: `<h1>Day 7 — 属性与权限</h1><p>Public 和 Private 的区别，就是 API 对内还是对外暴露的区别。</p>`,
-  8: `<h1>Day 8 — LINQ：数据查询的神器</h1><p>让你像操作 Excel 过滤器一样过滤数据。</p>`,
-  9: `<h1>Day 9 — 异常处理</h1><p>程序挂了怎么办？Try-Catch 就像是容灾备份方案。</p>`,
-  10: `<h1>Day 10 — 异步编程</h1><p>Async 和 Await 让程序能同时处理多项任务。</p>`
-};
-
-const codeTemplates = {
-  1: "using System;\n\npublic class Program {\n    public static void Main() {\n        Console.WriteLine(\"Hello World!\");\n        Console.WriteLine(\"欢迎来到 C# 学习之旅。\");\n    \n}\n}",
-  2: "using System;\n\npublic class Program {\n    public static void Main() {\n        string productName = \"智能手表\";\n        double price = 1299.5;\n        int stock = 50;\n        bool isAvailable = true;\n\n        Console.WriteLine($\"产品: {productName}\");\n        Console.WriteLine($\"价格: {price} 元\");\n        Console.WriteLine($\"库存: {stock}\");\n        Console.WriteLine($\"是否有货: {isAvailable}\");\n    }\n}",
-  3: "using System;\n\npublic class Program {\n    public static void Main() {\n        int score = 85;\n\n        if (score >= 90) {\n            Console.WriteLine(\"等级: A (优秀)\");\n        } else if (score >= 80) {\n            Console.WriteLine(\"等级: B (良好)\");\n        } else {\n            Console.WriteLine(\"等级: C (及格)\");\n        }\n    }\n}",
-  4: "using System;\n\npublic class Program {\n    public static void Main() {\n        string[] users = { \"Alice\", \"Bob\", \"Charlie\" };\n        foreach (var user in users) {\n            Console.WriteLine($\"欢迎用户: {user}\");\n        }\n    }\n}",
-  5: "using System;\n\npublic class Program {\n    public static void Main() {\n        double result = CalculateDiscount(100, 0.8);\n        Console.WriteLine($\"折后价: {result}\");\n    }\n    public static double CalculateDiscount(double original, double rate) {\n        return original * rate;\n    }\n}",
-  6: "using System;\n\npublic class User {\n    public string Name { get; set; }\n    public void SayHello() {\n        Console.WriteLine($\"Hello, I am {Name}\");\n    }\n}\n\npublic class Program {\n    public static void Main() {\n        User u = new User();\n        u.Name = \"Neal\";\n        u.SayHello();\n    }\n}"
-};
 
 createApp({
   setup() {
     const currentDay = ref(1);
-    const code = ref(codeTemplates[1]);
+    const activeExerciseIndex = ref(0);
     const outputText = ref('');
     const isRunning = ref(false);
-    const statusMessage = ref('');
-    const statusColor = ref('#605e5c');
+    const validationStatus = ref(null);
     let editor = null;
 
-    const currentLessonContent = computed(() => lessonContent[currentDay.value] || '内容更新中...');
+    const currentContent = computed(() => syllabus[currentDay.value - 1]?.content || '');
+    const currentExercises = computed(() => syllabus[currentDay.value - 1]?.exercises || []);
+    const activeExerciseTitle = computed(() => {
+      const ex = currentExercises.value[activeExerciseIndex.value];
+      return ex ? `练习: ${ex.title}` : '代码编辑区';
+    });
 
     const selectDay = (day) => {
       currentDay.value = day;
-      code.value = codeTemplates[day] || '// 敬请期待...';
-      if (editor) editor.setValue(code.value);
-      outputText.value = '';
-      statusMessage.value = '';
+      activeExerciseIndex.value = 0;
+      loadExercise(0);
+    };
+
+    const loadExercise = (index) => {
+      activeExerciseIndex.value = index;
+      const ex = currentExercises.value[index];
+      if (ex && editor) {
+        editor.setValue(ex.template);
+        outputText.value = '';
+        validationStatus.value = null;
+      }
     };
 
     const runCode = async () => {
+      const code = editor.getValue();
       isRunning.value = true;
-      statusMessage.value = '正在通过 JDoodle 编译运行...';
-      statusColor.value = '#0078d4';
       outputText.value = '';
+      validationStatus.value = null;
+
       try {
         const response = await fetch('/api/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ script: code.value, language: 'csharp', versionIndex: '3' })
+          body: JSON.stringify({ script: code, language: 'csharp', versionIndex: '3' })
         });
-        if (!response.ok) throw new Error('网络请求失败');
         const result = await response.json();
+        
         if (result.output) {
-          outputText.value = result.output;
-          statusMessage.value = '运行完成';
-          statusColor.value = '#107c10';
+          const actualOutput = result.output.trim();
+          outputText.value = actualOutput;
+          
+          const expected = currentExercises.value[activeExerciseIndex.value]?.expected;
+          if (expected) {
+            const formattedExpected = expected.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+            if (actualOutput === formattedExpected) {
+              validationStatus.value = 'Correct';
+            } else {
+              validationStatus.value = 'Incorrect';
+            }
+          }
         } else if (result.error) {
           outputText.value = result.error;
-          statusMessage.value = '编译错误';
-          statusColor.value = '#a4262c';
         }
       } catch (err) {
         outputText.value = '错误: ' + err.message;
-        statusMessage.value = '连接失败';
-        statusColor.value = '#a4262c';
       } finally {
         isRunning.value = false;
       }
     };
 
-    const resetCode = () => {
-      code.value = codeTemplates[currentDay.value];
-      if (editor) editor.setValue(code.value);
-    };
-
     onMounted(() => {
-      editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-        mode: 'text/x-csharp',
-        theme: 'neo',
-        lineNumbers: true,
-        indentUnit: 4,
-        matchBrackets: true,
-        lineWrapping: true
-      });
-      editor.setValue(code.value);
-      editor.on('change', () => {
-        code.value = editor.getValue();
-      });
+      const el = document.getElementById('editor');
+      if (el) {
+        editor = CodeMirror.fromTextArea(el, {
+          mode: 'text/x-csharp',
+          theme: 'neo',
+          lineNumbers: true,
+          indentUnit: 4,
+          matchBrackets: true,
+          lineWrapping: true
+        });
+        loadExercise(0);
+      }
     });
 
     return {
+      syllabus,
       currentDay,
-      dayTitles,
-      currentLessonContent,
+      currentContent,
+      currentExercises,
+      activeExerciseIndex,
+      activeExerciseTitle,
       outputText,
       isRunning,
-      statusMessage,
-      statusColor,
+      validationStatus,
       selectDay,
-      runCode,
-      resetCode
+      loadExercise,
+      runCode
     };
   }
 }).mount('#app');
