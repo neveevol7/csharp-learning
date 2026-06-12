@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>C# 10 日学习计划 — 交互式学习平台</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+#app {
+  max-width: 1600px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.day-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.day-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.day-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.day-btn.active {
+  background: white;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.controls button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.controls button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.left-panel {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  border-right: 1px solid #e0e0e0;
+}
+
+.left-panel h2 {
+  color: #667eea;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.left-panel h3 {
+  color: #333;
+  margin: 20px 0 10px 0;
+  font-size: 16px;
+}
+
+.left-panel p, .left-panel li {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.left-panel ul {
+  margin-left: 20px;
+}
+
+.code-example {
+  background: #2b2b2b;
+  color: #f8f8f2;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.editor-container {
+  flex: 1;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-label {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.CodeMirror {
+  border-radius: 6px !important;
+  border: 1px solid #ddd !important;
+  font-size: 13px !important;
+  flex: 1;
+}
+
+.output-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+}
+
+.output-label {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.output-area {
+  background: #2b2b2b;
+  color: #f8f8f2;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border: 1px solid #444;
+}
+
+.status {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status.success {
+  color: #4caf50;
+}
+
+.status.error {
+  color: #f44336;
+}
+
+.status.running {
+  color: #2196f3;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    flex-direction: column;
+  }
+  .left-panel {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  #app {
+    height: auto;
+  }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <h1>📚 C# 10 日学习计划</h1>
+    <div class="day-nav">
+      <span style="font-size: 14px;">选择章节:</span>
+      <button 
+        v-for="day in days"
+        :key="day"
+        :class="['day-btn', { active: currentDay === day }]"
+        @click="selectDay(day)"
+      >
+        Day {{ day }}
+      </button>
+    </div>
+    <div class="controls">
+      <button @click="runCode" :disabled="isRunning">▶ 运行代码</button>
+      <button @click="resetCode">↻ 重置</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="left-panel" v-html="currentLessonContent"></div>
+    
+    <div class="right-panel">
+      <div class="editor-container">
+        <div class="editor-label">💻 代码编辑器</div>
+        <textarea ref="editorElement"></textarea>
+      </div>
+      
+      <div class="output-container">
+        <div class="output-label">📋 程序输出</div>
+        <div class="output-area" ref="outputArea">{{ outputText }}</div>
+        <div v-if="statusMessage" :class="['status', statusClass]">
+          {{ statusMessage }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+<script>
+const { createApp, ref, computed, watch, onMounted } = Vue;
+
+const lessonContent = {
+  1: `
+    <h2>Day 1 — 环境与第一个程序</h2>
+    <p>欢迎来到 C# 学习之旅！今天我们将学习如何在控制台打印内容。</p>
+    
+    <h3>📖 核心概念</h3>
+    <ul>
+      <li><strong>Main() 方法</strong>：程序的入口点</li>
+      <li><strong>Console.WriteLine()</strong>：向控制台输出一行文本</li>
+      <li><strong>字符串</strong>：用双引号括起来的文本</li>
+    </ul>
+
+    <h3>💡 代码示例</h3>
+    <div class="code-example">using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("你好，C#!");
+        Console.WriteLine(42);
+        Console.WriteLine("我叫 Alice");
+    }
+}</div>
+
+    <h3>📝 输出结果</h3>
+    <div class="code-example">你好，C#!
+42
+我叫 Alice</div>
+
+    <h3>✏️ 练习</h3>
+    <ul>
+      <li>打印你的名字</li>
+      <li>打印一个数字</li>
+      <li>打印一句话</li>
+    </ul>
+  `,
+  2: `
+    <h2>Day 2 — 变量与类型</h2>
+    <p>变量是存储数据的容器。C# 是强类型语言，每个变量都有固定的类型。</p>
+    
+    <h3>📖 常见类型</h3>
+    <ul>
+      <li><strong>int</strong>：整数（-2147483648 到 2147483647）</li>
+      <li><strong>double</strong>：小数（浮点数）</li>
+      <li><strong>string</strong>：文本</li>
+      <li><strong>bool</strong>：布尔值（true 或 false）</li>
+      <li><strong>char</strong>：单个字符</li>
+    </ul>
+
+    <h3>💡 变量声明与赋值</h3>
+    <div class="code-example">int age = 25;
+double height = 1.75;
+string name = "Alice";
+bool isStudent = true;</div>
+
+    <h3>💡 字符串格式化与拼接</h3>
+    <div class="code-example">int a = 10, b = 3;
+Console.WriteLine(a + b);           // 输出：13
+Console.WriteLine(\`\${a} + \${b} = \${a + b}\`);  // 内插字符串
+Console.WriteLine("a = " + a);      // 字符串拼接</div>
+
+    <h3>✏️ 练习</h3>
+    <ul>
+      <li>声明 int age = 20，打印出来</li>
+      <li>声明两个 int，计算它们的和</li>
+      <li>使用字符串格式化打印结果</li>
+    </ul>
+  `,
+  3: `
+    <h2>Day 3 — 条件语句</h2>
+    <p>用 if/else 根据条件执行不同的代码。</p>
+    
+    <h3>📖 比较运算符</h3>
+    <ul>
+      <li><strong>==</strong>：等于</li>
+      <li><strong>!=</strong>：不等于</li>
+      <li><strong>&lt;</strong>：小于</li>
+      <li><strong>&gt;</strong>：大于</li>
+      <li><strong>&lt;=</strong>：小于等于</li>
+      <li><strong>&gt;=</strong>：大于等于</li>
+    </ul>
+
+    <h3>📖 逻辑运算符</h3>
+    <ul>
+      <li><strong>&amp;&amp;</strong>：与（AND）</li>
+      <li><strong>||</strong>：或（OR）</li>
+      <li><strong>!</strong>：非（NOT）</li>
+    </ul>
+
+    <h3>💡 if/else 语句</h3>
+    <div class="code-example">int score = 85;
+if (score >= 90) {
+    Console.WriteLine("优秀");
+} else if (score >= 80) {
+    Console.WriteLine("良好");
+} else if (score >= 70) {
+    Console.WriteLine("及格");
+} else {
+    Console.WriteLine("不及格");
+}</div>
+
+    <h3>💡 switch 语句</h3>
+    <div class="code-example">int day = 3;
+switch (day) {
+    case 1: Console.WriteLine("星期一"); break;
+    case 2: Console.WriteLine("星期二"); break;
+    case 3: Console.WriteLine("星期三"); break;
+    default: Console.WriteLine("其他"); break;
+}</div>
+
+    <h3>✏️ 练习</h3>
+    <ul>
+      <li>编写一个程序判断数字是否为正数</li>
+      <li>根据分数打印等级（优秀/良好/及格/不及格）</li>
+      <li>判断一个数是否为奇数或偶数</li>
+    </ul>
+  `,
+  4: `
+    <h2>Day 4 — 循环与数组</h2>
+    <p>循环让我们重复执行代码。数组让我们存储多个相同类型的数据。</p>
+    
+    <h3>📖 for 循环</h3>
+    <div class="code-example">for (int i = 0; i < 5; i++) {
+    Console.WriteLine(\`第 \${i + 1} 次\`);
+}</div>
+
+    <h3>📖 while 循环</h3>
+    <div class="code-example">int count = 0;
+while (count < 3) {
+    Console.WriteLine(count);
+    count++;
+}</div>
+
+    <h3>📖 数组</h3>
+    <div class="code-example">int[] nums = { 10, 20, 30, 40, 50 };
+string[] names = { "Alice", "Bob", "Charlie" };
+
+// 访问元素（从 0 开始）
+Console.WriteLine(nums[0]);   // 输出：10
+Console.WriteLine(names[1]);  // 输出：Bob</div>
+
+    <h3>📖 foreach 循环</h3>
+    <div class="code-example">int[] scores = { 85, 90, 78, 92 };
+foreach (int score in scores) {
+    Console.WriteLine(score);
+}</div>
+
+    <h3>💡 综合例题</h3>
+    <div class="code-example">int[] nums = { 5, 2, 8, 1, 9 };
+int sum = 0;
+foreach (int n in nums) {
+    sum += n;
+}
+Console.WriteLine(\`总和: \${sum}\`);  // 输出：总和: 25</div>
+
+    <h3>✏️ 练习</h3>
+    <ul>
+      <li>打印 1 到 10 的所有数字</li>
+      <li>计算数组的总和与平均值</li>
+      <li>找出数组中的最大值</li>
+      <li>打印九九乘法表</li>
+    </ul>
+  `
+};
+
+const codeTemplates = {
+  1: `using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("你好，C#!");
+    }
+}`,
+  2: `using System;
+
+class Program {
+    static void Main() {
+        int age = 25;
+        double height = 1.75;
+        string name = "Alice";
+        
+        Console.WriteLine(\`我叫 \${name}，今年 \${age} 岁，身高 \${height} 米\`);
+    }
+}`,
+  3: `using System;
+
+class Program {
+    static void Main() {
+        int score = 85;
+        
+        if (score >= 90) {
+            Console.WriteLine("优秀");
+        } else if (score >= 80) {
+            Console.WriteLine("良好");
+        } else if (score >= 70) {
+            Console.WriteLine("及格");
+        } else {
+            Console.WriteLine("不及格");
+        }
+    }
+}`,
+  4: `using System;
+
+class Program {
+    static void Main() {
+        int[] nums = { 5, 2, 8, 1, 9 };
+        int sum = 0;
+        
+        foreach (int n in nums) {
+            sum += n;
+        }
+        
+        Console.WriteLine(\`数组: [5, 2, 8, 1, 9]\`);
+        Console.WriteLine(\`总和: \${sum}\`);
+        Console.WriteLine(\`平均值: \${sum / 5.0}\`);
+    }
+}`
+};
+
+createApp({
+  setup() {
+    const currentDay = ref(1);
+    const days = [1, 2, 3, 4];
+    const code = ref(codeTemplates[1]);
+    const outputText = ref('');
+    const isRunning = ref(false);
+    const statusMessage = ref('');
+    const statusClass = ref('');
+    let editor = null;
+
+    const currentLessonContent = computed(() => lessonContent[currentDay.value] || '');
+
+    const selectDay = (day) => {
+      currentDay.value = day;
+      code.value = codeTemplates[day];
+      if (editor) editor.setValue(code.value);
+      outputText.value = '';
+      statusMessage.value = '';
+    };
+
+    watch(currentDay, (v) => {
+      code.value = codeTemplates[v];
+      if (editor) editor.setValue(code.value);
+      outputText.value = '';
+      statusMessage.value = '';
+    });
+
+    const runCode = async () => {
+      isRunning.value = true;
+      statusMessage.value = '⏳ 编译中...';
+      statusClass.value = 'running';
+      outputText.value = '';
+
+      try {
+        // 调用本地代理 /api/execute，代理再转发到 JDoodle（避免 CORS）
+        const response = await fetch('/api/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ script: code.value, language: 'csharp', versionIndex: '3' })
+        });
+
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          outputText.value = errBody.error || `代理返回错误: ${response.status}`;
+          statusMessage.value = '❌ 编译或代理错误';
+          statusClass.value = 'error';
+          return;
+        }
+
+        const result = await response.json();
+        if (result.output) {
+          outputText.value = result.output.trim();
+          statusMessage.value = '✅ 编译成功';
+          statusClass.value = 'success';
+        } else if (result.error) {
+          outputText.value = result.error;
+          statusMessage.value = '❌ 编译错误';
+          statusClass.value = 'error';
+        } else {
+          outputText.value = JSON.stringify(result, null, 2);
+          statusMessage.value = '✅ 完成（无输出）';
+          statusClass.value = 'success';
+        }
+      } catch (err) {
+        outputText.value = `错误: ${err.message}`;
+        statusMessage.value = '❌ 网络或代理未运行';
+        statusClass.value = 'error';
+      } finally {
+        isRunning.value = false;
+      }
+    };
+
+    const resetCode = () => {
+      code.value = codeTemplates[currentDay.value];
+      if (editor) editor.setValue(code.value);
+      outputText.value = '';
+      statusMessage.value = '';
+    };
+
+    onMounted(() => {
+      editor = CodeMirror.fromTextArea(
+        document.querySelector('textarea'),
+        {
+          mode: 'text/x-csharp',
+          theme: 'dracula',
+          lineNumbers: true,
+          indentUnit: 4,
+          indentWithTabs: false,
+          lineWrapping: true,
+          styleActiveLine: true,
+          matchBrackets: true
+        }
+      );
+      editor.setValue(code.value);
+      editor.on('change', () => {
+        code.value = editor.getValue();
+      });
+    });
+
+    return {
+      currentDay,
+      days,
+      code,
+      outputText,
+      isRunning,
+      statusMessage,
+      statusClass,
+      currentLessonContent,
+      selectDay,
+      runCode,
+      resetCode
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
