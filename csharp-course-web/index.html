@@ -63,14 +63,6 @@ aside {
 .nav-item:hover { background-color: #edebe9; }
 .nav-item.active { background-color: #fff; border-left-color: var(--ms-blue); font-weight: 600; color: var(--ms-blue); }
 
-.nav-item .day-badge {
-  font-size: 11px;
-  background: var(--ms-border);
-  padding: 2px 6px;
-  border-radius: 10px;
-  color: #605e5c;
-}
-
 main { flex: 1; display: flex; overflow: hidden; }
 
 .article-container { flex: 1.2; padding: 40px; overflow-y: auto; border-right: 1px solid var(--ms-border); }
@@ -179,69 +171,165 @@ const { createApp, ref, computed, onMounted } = Vue;
 
 const syllabus = [
   {
-    title: "世界，您好！(Hello World)",
+    title: "Day 1: 环境、语法与数据初探",
     content: `
-      <h1>Day 1: 走进 C# 的世界</h1>
-      <p>欢迎开始 C# 学习之旅。作为一种由微软开发的语言，C# 的设计非常严谨且逻辑清晰。</p>
-
-      <h2>1. 您的第一个 C# 程序</h2>
-      <p>参考 Microsoft Learn 的标准格式，一个完整的程序通常包含以下部分：</p>
-      <pre>
-using System; // 引用基础工具包
-
-namespace HelloWorldApp // 项目的“名称空间”，用于组织代码
-{
-    class Program // 定义一个“类”，是代码的容器
-    {
-        static void Main() // 程序的入口点，电脑从这里开始执行
-        {
-            // 在屏幕上输出一行字
-            Console.WriteLine("Hello, World!");
-        }
-    }
-}</pre>
-
-      <h3>关键点解析：</h3>
+      <h1>Day 1: 建立基础感性认识</h1>
+      <p>目标：理解程序结构，掌握基本数据分类。耗时：2-3 小时。</p>
+      <h2>核心概念</h2>
       <ul>
-        <li><code>using System;</code>: 告诉系统我们要用微软的基础类库。</li>
-        <li><code>Console.WriteLine</code>: <code>Console</code> 是类（类比：电视机），<code>WriteLine</code> 是方法（类比：换台）。</li>
-        <li><strong>分号 (;)</strong>: 每一行指令结束时必须加分号。</li>
+        <li><strong>Literals (字面量)</strong>: <code>"string"</code>, <code>100</code>, <code>12.5m</code>, <code>true</code>。</li>
+        <li><strong>Variables (变量)</strong>: 存储数据的容器。<code>string name = "Neal";</code></li>
+        <li><strong>Interpolation (插值)</strong>: <code>$"{variable}"</code>。</li>
       </ul>
-
-      <h2>2. 输出特殊内容：转义字符</h2>
-      <p>有时候，我们需要输出一些特殊的格式，比如换行或者带引号的话。这时需要用到 <strong>转义字符 (Escape Characters)</strong>：</p>
-      <ul>
-        <li><code>\\n</code>: 强制<strong>换行</strong>。</li>
-        <li><code>\\t</code>: 水平<strong>制表符</strong> (就像按了一下 Tab 键，用于对齐文本)。</li>
-        <li><code>\\"</code>: 在引号内部输出一个<strong>双引号</strong>本身。</li>
-      </ul>
-      <p><strong>示例：</strong> <code>Console.WriteLine("第一行\\n第二行");</code> 会显示为两行。</p>
+      <div class="tip-box">注意：decimal 类型必须加 'm' 后缀，如 19.99m。</div>
     `,
     exercises: [
-      {
-        title: "基础打印练习",
-        desc: "输出文字：'C# 学习第一天！'",
-        template: 'using System;\n\nclass Program {\n    static void Main() {\n        // 在这里编写代码\n        \n    }\n}',
-        expected: "C# 学习第一天！"
-      },
-      {
-        title: "转义字符挑战",
-        desc: "使用 \\n 输出两行文字：第一行显示 '你好'，第二行显示 '世界'。",
-        template: 'using System;\n\nclass Program {\n    static void Main() {\n        // 使用 \\n 来换行\n        \n    }\n}',
-        expected: "你好\n世界"
-      },
-      {
-        title: "制表符对齐挑战",
-        desc: "使用 \\t 输出两列数据：'姓名' 和 '职业'，中间用制表符隔开。输出结果应为：'姓名\\t职业'",
-        template: 'using System;\n\nclass Program {\n    static void Main() {\n        // 使用 \\t 对齐\n        \n    }\n}',
-        expected: "姓名\t职业"
-      }
+      { title: "变量打印", desc: "声明并打印变量 projectName = 'C# Learning'", template: 'using System;\nclass Program { static void Main() { /* 这里写代码 */ } }', expected: "C# Learning" },
+      { title: "插值练习", desc: "打印 'User Neal is Level 5'", template: 'using System;\nclass Program { static void Main() { string u="Neal"; int l=5; /* 使用 $ 打印 */ } }', expected: "User Neal is Level 5" }
     ]
   },
   {
-    title: "变量与存储数据",
-    content: "<h1>Day 2: 变量与数据类型</h1><p>内容正在根据您的反馈进行深度优化中...</p>",
-    exercises: []
+    title: "Day 2: 算术逻辑与方法调用",
+    content: `
+      <h1>Day 2: 加工数据的工具</h1>
+      <p>目标：掌握数学运算与内置字符串处理方法。耗时：3 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>算术运算符</strong>: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code> (模运算)。</li>
+        <li><strong>方法调用</strong>: <code>string.ToUpper()</code>, <code>string.Trim()</code>。</li>
+        <li><strong>随机数</strong>: <code>Random dice = new Random(); int roll = dice.Next(1, 7);</code></li>
+      </ul>
+      <div class="tip-box">PM 场景：% 运算符常用于实现 UI 中的“隔行换色”逻辑。</div>
+    `,
+    exercises: [
+      { title: "平均分计算", desc: "计算 80, 90, 85 的平均分并打印", template: 'using System;\nclass Program { static void Main() { /* 注意：除法要保留小数 */ } }', expected: "85" },
+      { title: "文本清理", desc: "对 \"  Hello  \" 进行 Trim 并转大写", template: 'using System;\nclass Program { static void Main() { string raw = "  Hello  "; /* 这里写代码 */ } }', expected: "HELLO" }
+    ]
+  },
+  {
+    title: "Day 3: 分支逻辑 (If/Else/Switch)",
+    content: `
+      <h1>Day 3: 程序的“大脑”决策</h1>
+      <p>目标：掌握条件判断与业务逻辑分支。耗时：3-4 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>Boolean 表达式</strong>: <code>score > 60</code>, <code>name == "Admin"</code>。</li>
+        <li><strong>逻辑运算符</strong>: <code>&&</code> (且), <code>||</code> (或), <code>!</code> (非)。</li>
+        <li><strong>Switch</strong>: 优雅处理多个固定选项（如订单状态）。</li>
+      </ul>
+    `,
+    exercises: [
+      { title: "折扣逻辑", desc: "根据变量 price 判断，若 > 100 打印 'Discount'，否则打印 'Original'", template: 'using System;\nclass Program { static void Main() { int price = 150; /* 这里写判断 */ } }', expected: "Discount" }
+    ]
+  },
+  {
+    title: "Day 4: 循环与数据批处理 (Arrays/Lists)",
+    content: `
+      <h1>Day 4: 告别重复劳动</h1>
+      <p>目标：掌握数组与 Foreach 循环。耗时：4 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>数组 (Arrays)</strong>: <code>string[] orders = { "A123", "B456" };</code></li>
+        <li><strong>循环 (Foreach)</strong>: 遍历集合中的每一个元素。</li>
+        <li><strong>List&lt;T&gt;</strong>: 动态增长的列表，比数组更常用。</li>
+      </ul>
+    `,
+    exercises: [
+      { title: "订单汇总", desc: "遍历数组 { 10, 20, 30 } 并打印总和 60", template: 'using System;\nclass Program { static void Main() { int[] nums = { 10, 20, 30 }; /* 使用 foreach 计算 */ } }', expected: "60" }
+    ]
+  },
+  {
+    title: "Day 5: 方法封装与逻辑复用",
+    content: `
+      <h1>Day 5: 模块化思维</h1>
+      <p>目标：理解参数传递与返回值。耗时：3 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>方法定义</strong>: <code>public void PrintMessage()</code>。</li>
+        <li><strong>参数 (Parameters)</strong>: 传入数据。</li>
+        <li><strong>返回值 (Return)</strong>: 传回结果。</li>
+      </ul>
+    `,
+    exercises: [
+      { title: "计算器方法", desc: "实现 Add(int a, int b) 方法并调用输出 30", template: 'using System;\nclass Program {\n    static void Main() { Console.WriteLine(Add(10, 20)); }\n    static int Add(int a, int b) { /* 补全代码 */ }\n}', expected: "30" }
+    ]
+  },
+  {
+    title: "Day 6: 类与对象 (OOP 核心)",
+    content: `
+      <h1>Day 6: 给业务建模</h1>
+      <p>目标：理解属性 (Properties) 与构造函数。耗时：4 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>类 (Class)</strong>: 对象的蓝图。</li>
+        <li><strong>属性 (Auto-Properties)</strong>: <code>public string Name { get; set; }</code></li>
+        <li><strong>实例 (Instantiation)</strong>: <code>var item = new Product();</code></li>
+      </ul>
+    `,
+    exercises: [
+      { title: "创建用户类", desc: "定义 User 类包含 Name 属性，实例化并打印 'Hello Neal'", template: 'using System;\nclass User { /* 定义属性 */ }\nclass Program { static void Main() { /* 实例化并打印 */ } }', expected: "Hello Neal" }
+    ]
+  },
+  {
+    title: "Day 7: 接口与多态 (Interface)",
+    content: `
+      <h1>Day 7: 理解微软架构的解耦</h1>
+      <p>目标：掌握接口 Interface 与依赖反转初探。耗时：4 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>Interface</strong>: 行为契约。<code>interface ILogger { void Log(); }</code></li>
+        <li><strong>多态</strong>: 同一接口的不同实现。</li>
+      </ul>
+      <div class="tip-box">接口就像是产品定义的“标准 API”，不管内部怎么实现，外部调用方式一致。</div>
+    `,
+    exercises: [
+      { title: "接口实战", desc: "实现 IShape 接口打印 'Drawing Circle'", template: 'using System;\ninterface IShape { void Draw(); }\nclass Circle : IShape { /* 实现方法 */ }\nclass Program { static void Main() { IShape s = new Circle(); s.Draw(); } }', expected: "Drawing Circle" }
+    ]
+  },
+  {
+    title: "Day 8: LINQ: 数据处理的神器",
+    content: `
+      <h1>Day 8: 像写 SQL 一样操作集合</h1>
+      <p>目标：掌握 Where, Select, OrderBy。耗时：3 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>Lambda 表达式</strong>: <code>n => n > 10</code>。</li>
+        <li><strong>LINQ 查询</strong>: <code>list.Where(x => x.Active).OrderBy(x => x.Price)</code>。</li>
+      </ul>
+    `,
+    exercises: [
+      { title: "过滤订单", desc: "从 {1, 5, 12, 8} 中选出 > 10 的数字并打印", template: 'using System;\nusing System.Linq;\nclass Program { static void Main() { int[] nums = {1, 5, 12, 8}; /* 使用 LINQ */ } }', expected: "12" }
+    ]
+  },
+  {
+    title: "Day 9: 异常处理与文件 IO",
+    content: `
+      <h1>Day 9: 稳健性与持久化</h1>
+      <p>目标：掌握 Try-Catch 与文本读写。耗时：3 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>Try-Catch-Finally</strong>: 优雅处理错误。</li>
+        <li><strong>File 类</strong>: <code>ReadAllText</code>, <code>WriteAllText</code>。</li>
+      </ul>
+    `,
+    exercises: [
+      { title: "安全除法", desc: "在 catch 中打印 'Error' 捕获除零异常", template: 'using System;\nclass Program { static void Main() { try { int x=0; int y=1/x; } catch { /* 打印 */ } } }', expected: "Error" }
+    ]
+  },
+  {
+    title: "Day 10: 异步编程 (Async/Await)",
+    content: `
+      <h1>Day 10: 现代应用的灵魂</h1>
+      <p>目标：理解非阻塞调用。耗时：4 小时。</p>
+      <h2>核心知识点</h2>
+      <ul>
+        <li><strong>Task</strong>: 异步任务。</li>
+        <li><strong>Async/Await</strong>: 让异步代码像同步一样好写。</li>
+      </ul>
+    `,
+    exercises: [
+      { title: "简单异步", desc: "打印 'Start' 然后打印 'End'", template: 'using System;\nusing System.Threading.Tasks;\nclass Program { static async Task Main() { Console.WriteLine("Start"); /* 这里写代码 */ } }', expected: "Start\nEnd" }
+    ]
   }
 ];
 
