@@ -50,7 +50,7 @@ header {
 .main-container { display: flex; flex: 1; overflow: hidden; }
 
 aside {
-  width: 260px;
+  width: 280px;
   background-color: var(--ms-sidebar-bg);
   border-right: 1px solid var(--ms-border);
   display: flex;
@@ -73,18 +73,24 @@ main { flex: 1; display: flex; overflow: hidden; }
 .article-container code { background: #f3f2f1; padding: 2px 4px; border-radius: 3px; font-family: monospace; }
 .article-container pre { background: #f3f2f1; padding: 12px; border-radius: 4px; margin: 10px 0; font-size: 13px; overflow-x: auto; }
 
+.step-box { background: #f3f9fd; border-left: 4px solid var(--ms-blue); padding: 15px; margin: 15px 0; }
+.step-num { font-weight: 700; color: var(--ms-blue); margin-right: 8px; }
+
 .exercise-section { margin-top: 30px; border-top: 2px solid var(--ms-blue); padding-top: 20px; }
 .exercise-card { background: #fff; border: 1px solid var(--ms-border); border-radius: 4px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
 .exercise-card:hover { border-color: var(--ms-blue); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 .exercise-card.active { border-left: 4px solid var(--ms-blue); background: #f9f9f9; }
 .exercise-card h4 { font-size: 14px; margin-bottom: 5px; }
-.exercise-card p { font-size: 12px; color: #666; margin: 0; }
 
+/* Editor Panel */
 .editor-panel { flex: 1; display: flex; flex-direction: column; background: #fff; }
 .editor-header { padding: 10px 20px; background: #faf9f8; border-bottom: 1px solid var(--ms-border); display: flex; justify-content: space-between; align-items: center; }
-.run-btn { background: var(--ms-blue); color: #fff; border: none; padding: 6px 16px; border-radius: 2px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.btn-group { display: flex; gap: 8px; }
+.btn { border: none; padding: 6px 16px; border-radius: 2px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.run-btn { background: var(--ms-blue); color: #fff; }
 .run-btn:hover { background: #005a9e; }
-.run-btn:disabled { background: #c8c6c4; }
+.clear-btn { background: #fff; border: 1px solid var(--ms-border); color: #323130; }
+.clear-btn:hover { background: #f3f2f1; }
 
 .CodeMirror { flex: 1; font-family: 'Cascadia Code', monospace; font-size: 14px; }
 
@@ -125,16 +131,14 @@ main { flex: 1; display: flex; overflow: hidden; }
         <div v-html="currentContent"></div>
 
         <div class="exercise-section" v-if="currentExercises.length">
-          <h3>✍️ 编程练习题</h3>
-          <p>点击下方题目开始练习，系统将自动校验你的输出结果。</p>
+          <h3>✍️ 课后动手练</h3>
           <div 
             v-for="(ex, i) in currentExercises" 
             :key="i"
             :class="['exercise-card', { active: activeExerciseIndex === i }]"
             @click="loadExercise(i)"
           >
-            <h4>练习 {{ i + 1 }}: {{ ex.title }}</h4>
-            <p>{{ ex.desc }}</p>
+            <h4>{{ i + 1 }}. {{ ex.title }}</h4>
           </div>
         </div>
       </div>
@@ -142,9 +146,12 @@ main { flex: 1; display: flex; overflow: hidden; }
       <div class="editor-panel">
         <div class="editor-header">
           <span style="font-size: 12px; font-weight: 700;">{{ activeExerciseTitle }}</span>
-          <button class="run-btn" @click="runCode" :disabled="isRunning">
-            {{ isRunning ? '⏳ 运行中...' : '▶ 运行并校验' }}
-          </button>
+          <div class="btn-group">
+            <button class="btn clear-btn" @click="clearEditor">清空</button>
+            <button class="btn run-btn" @click="runCode" :disabled="isRunning">
+              {{ isRunning ? '⏳ 运行中...' : '▶ 运行并校验' }}
+            </button>
+          </div>
         </div>
         <textarea id="editor"></textarea>
         
@@ -152,10 +159,10 @@ main { flex: 1; display: flex; overflow: hidden; }
           <div class="output-header">
             <span>控制台输出</span>
             <span v-if="validationStatus" :class="['validation-badge', validationStatus === 'Correct' ? 'success-bg' : 'error-bg']">
-              {{ validationStatus === 'Correct' ? '🎉 挑战成功！' : '❌ 结果不匹配，再试一次' }}
+              {{ validationStatus === 'Correct' ? '🎉 校验通过' : '❌ 结果不匹配' }}
             </span>
           </div>
-          <div class="output-content">{{ outputText || '点击运行查看结果...' }}</div>
+          <div class="output-content">{{ outputText || '代码运行结果将在此显示...' }}</div>
         </div>
       </div>
     </main>
@@ -171,166 +178,80 @@ const { createApp, ref, computed, onMounted } = Vue;
 
 const syllabus = [
   {
-    title: "Day 1: 环境、语法与数据初探",
+    title: "Day 1: 环境与基础语法结构",
     content: `
-      <h1>Day 1: 建立基础感性认识</h1>
-      <p>目标：理解程序结构，掌握基本数据分类。耗时：2-3 小时。</p>
-      <h2>核心概念</h2>
+      <h1>第一章：从零开始运行 C#</h1>
+      <p>欢迎。作为产品经理，理解开发的第一步是：<strong>程序是如何被组织并运行的</strong>。</p>
+
+      <div class="step-box"><span class="step-num">Step 1</span><strong>基础结构：三层盒子模型</strong></div>
+      <p>C# 的代码像俄罗斯套娃，每一层都有其作用：</p>
+      <pre>
+using System; // 第一层：引用（我要用哪些工具？）
+
+namespace MyApp // 第二层：命名空间（我是谁？防止名字重复）
+{
+    class Program // 第三层：类（我是做什么的？代码的容器）
+    {
+        static void Main() // 第四层：方法（从哪里开始跑？）
+        {
+            Console.WriteLine("Hi"); 
+        }
+    }
+}</pre>
+
+      <div class="step-box"><span class="step-num">Step 2</span><strong>指令的终点：分号</strong></div>
+      <p>在 C# 中，每一行独立的指令都必须以 <code>;</code> 结尾，否则电脑会认为你话还没说完。</p>
+
+      <div class="step-box"><span class="step-num">Step 3</span><strong>转义字符：特殊的打印技巧</strong></div>
+      <p>如果你想在一段话中换行，直接按回车是不行的，你需要用：</p>
       <ul>
-        <li><strong>Literals (字面量)</strong>: <code>"string"</code>, <code>100</code>, <code>12.5m</code>, <code>true</code>。</li>
-        <li><strong>Variables (变量)</strong>: 存储数据的容器。<code>string name = "Neal";</code></li>
-        <li><strong>Interpolation (插值)</strong>: <code>$"{variable}"</code>。</li>
+        <li><code>\\n</code>: 代表“换行”。</li>
+        <li><code>\\t</code>: 代表“Tab 缩进”（对齐数据非常有用）。</li>
+        <li><code>\\"</code>: 代表要在引号里面打印一个“引号”本身。</li>
       </ul>
-      <div class="tip-box">注意：decimal 类型必须加 'm' 后缀，如 19.99m。</div>
+      <p><strong>练习提示：</strong> <code>"Name:\\tNeal"</code> 会显示为 <code>Name:    Neal</code>。</p>
     `,
     exercises: [
-      { title: "变量打印", desc: "声明并打印变量 projectName = 'C# Learning'", template: 'using System;\nclass Program { static void Main() { /* 这里写代码 */ } }', expected: "C# Learning" },
-      { title: "插值练习", desc: "打印 'User Neal is Level 5'", template: 'using System;\nclass Program { static void Main() { string u="Neal"; int l=5; /* 使用 $ 打印 */ } }', expected: "User Neal is Level 5" }
+      { title: "打印初体验", desc: "输出文字：'Day 1 Success'", template: 'using System;\nclass Program { static void Main() {\n    // 写下你的代码\n}\n}', expected: "Day 1 Success" },
+      { title: "换行与对齐", desc: "输出两行：第一行'A', 第二行缩进后的'B'", template: 'using System;\nclass Program { static void Main() {\n    // 使用 \\n 和 \\t\n}\n}', expected: "A\n\tB" }
     ]
   },
   {
-    title: "Day 2: 算术逻辑与方法调用",
+    title: "Day 2: 变量与数据存储深度探索",
     content: `
-      <h1>Day 2: 加工数据的工具</h1>
-      <p>目标：掌握数学运算与内置字符串处理方法。耗时：3 小时。</p>
-      <h2>核心知识点</h2>
+      <h1>第二章：数据的分类与存放</h1>
+      <p>程序不仅要打印，更要处理数据。今天我们要学会如何“记住”信息。</p>
+
+      <div class="step-box"><span class="step-num">Step 1</span><strong>数据的五大元老</strong></div>
       <ul>
-        <li><strong>算术运算符</strong>: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code> (模运算)。</li>
-        <li><strong>方法调用</strong>: <code>string.ToUpper()</code>, <code>string.Trim()</code>。</li>
-        <li><strong>随机数</strong>: <code>Random dice = new Random(); int roll = dice.Next(1, 7);</code></li>
+        <li><code>string</code>: 文本。必须用双引号 <code>"Neal"</code>。</li>
+        <li><code>int</code>: 整数。如 <code>100</code>。</li>
+        <li><code>decimal</code>: 价格/金额。<strong>必须加 m 后缀</strong>，如 <code>19.99m</code>。</li>
+        <li><code>bool</code>: 开关。只有 <code>true</code> 或 <code>false</code>。</li>
+        <li><code>var</code>: 自动挡。由电脑根据右边的值自动猜类型（最常用）。</li>
       </ul>
-      <div class="tip-box">PM 场景：% 运算符常用于实现 UI 中的“隔行换色”逻辑。</div>
+
+      <div class="step-box"><span class="step-num">Step 2</span><strong>字符串插值：现代化的拼接</strong></div>
+      <p>以前拼接字符串用 <code>+</code>，现在我们用 <code>$</code>，更优雅：</p>
+      <pre>string name = "Neal";
+Console.WriteLine($"Hello {name}");</pre>
+
+      <div class="step-box"><span class="step-num">Step 3</span><strong>变量的命名规范</strong></div>
+      <p>C# 习惯使用<strong>驼峰命名法</strong>：第一个单词小写，后续单词大写，如 <code>orderCount</code>。</p>
     `,
     exercises: [
-      { title: "平均分计算", desc: "计算 80, 90, 85 的平均分并打印", template: 'using System;\nclass Program { static void Main() { /* 注意：除法要保留小数 */ } }', expected: "85" },
-      { title: "文本清理", desc: "对 \"  Hello  \" 进行 Trim 并转大写", template: 'using System;\nclass Program { static void Main() { string raw = "  Hello  "; /* 这里写代码 */ } }', expected: "HELLO" }
+      { title: "价格变量练习", desc: "定义 decimal price = 9.99m; 并打印它", template: 'using System;\nclass Program { static void Main() {\n    \n}\n}', expected: "9.99" },
+      { title: "现代插值挑战", desc: "定义 user='Neal', age=25, 输出 'Neal is 25'", template: 'using System;\nclass Program { static void Main() {\n    \n}\n}', expected: "Neal is 25" }
     ]
   },
-  {
-    title: "Day 3: 分支逻辑 (If/Else/Switch)",
-    content: `
-      <h1>Day 3: 程序的“大脑”决策</h1>
-      <p>目标：掌握条件判断与业务逻辑分支。耗时：3-4 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>Boolean 表达式</strong>: <code>score > 60</code>, <code>name == "Admin"</code>。</li>
-        <li><strong>逻辑运算符</strong>: <code>&&</code> (且), <code>||</code> (或), <code>!</code> (非)。</li>
-        <li><strong>Switch</strong>: 优雅处理多个固定选项（如订单状态）。</li>
-      </ul>
-    `,
-    exercises: [
-      { title: "折扣逻辑", desc: "根据变量 price 判断，若 > 100 打印 'Discount'，否则打印 'Original'", template: 'using System;\nclass Program { static void Main() { int price = 150; /* 这里写判断 */ } }', expected: "Discount" }
-    ]
-  },
-  {
-    title: "Day 4: 循环与数据批处理 (Arrays/Lists)",
-    content: `
-      <h1>Day 4: 告别重复劳动</h1>
-      <p>目标：掌握数组与 Foreach 循环。耗时：4 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>数组 (Arrays)</strong>: <code>string[] orders = { "A123", "B456" };</code></li>
-        <li><strong>循环 (Foreach)</strong>: 遍历集合中的每一个元素。</li>
-        <li><strong>List&lt;T&gt;</strong>: 动态增长的列表，比数组更常用。</li>
-      </ul>
-    `,
-    exercises: [
-      { title: "订单汇总", desc: "遍历数组 { 10, 20, 30 } 并打印总和 60", template: 'using System;\nclass Program { static void Main() { int[] nums = { 10, 20, 30 }; /* 使用 foreach 计算 */ } }', expected: "60" }
-    ]
-  },
-  {
-    title: "Day 5: 方法封装与逻辑复用",
-    content: `
-      <h1>Day 5: 模块化思维</h1>
-      <p>目标：理解参数传递与返回值。耗时：3 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>方法定义</strong>: <code>public void PrintMessage()</code>。</li>
-        <li><strong>参数 (Parameters)</strong>: 传入数据。</li>
-        <li><strong>返回值 (Return)</strong>: 传回结果。</li>
-      </ul>
-    `,
-    exercises: [
-      { title: "计算器方法", desc: "实现 Add(int a, int b) 方法并调用输出 30", template: 'using System;\nclass Program {\n    static void Main() { Console.WriteLine(Add(10, 20)); }\n    static int Add(int a, int b) { /* 补全代码 */ }\n}', expected: "30" }
-    ]
-  },
-  {
-    title: "Day 6: 类与对象 (OOP 核心)",
-    content: `
-      <h1>Day 6: 给业务建模</h1>
-      <p>目标：理解属性 (Properties) 与构造函数。耗时：4 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>类 (Class)</strong>: 对象的蓝图。</li>
-        <li><strong>属性 (Auto-Properties)</strong>: <code>public string Name { get; set; }</code></li>
-        <li><strong>实例 (Instantiation)</strong>: <code>var item = new Product();</code></li>
-      </ul>
-    `,
-    exercises: [
-      { title: "创建用户类", desc: "定义 User 类包含 Name 属性，实例化并打印 'Hello Neal'", template: 'using System;\nclass User { /* 定义属性 */ }\nclass Program { static void Main() { /* 实例化并打印 */ } }', expected: "Hello Neal" }
-    ]
-  },
-  {
-    title: "Day 7: 接口与多态 (Interface)",
-    content: `
-      <h1>Day 7: 理解微软架构的解耦</h1>
-      <p>目标：掌握接口 Interface 与依赖反转初探。耗时：4 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>Interface</strong>: 行为契约。<code>interface ILogger { void Log(); }</code></li>
-        <li><strong>多态</strong>: 同一接口的不同实现。</li>
-      </ul>
-      <div class="tip-box">接口就像是产品定义的“标准 API”，不管内部怎么实现，外部调用方式一致。</div>
-    `,
-    exercises: [
-      { title: "接口实战", desc: "实现 IShape 接口打印 'Drawing Circle'", template: 'using System;\ninterface IShape { void Draw(); }\nclass Circle : IShape { /* 实现方法 */ }\nclass Program { static void Main() { IShape s = new Circle(); s.Draw(); } }', expected: "Drawing Circle" }
-    ]
-  },
-  {
-    title: "Day 8: LINQ: 数据处理的神器",
-    content: `
-      <h1>Day 8: 像写 SQL 一样操作集合</h1>
-      <p>目标：掌握 Where, Select, OrderBy。耗时：3 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>Lambda 表达式</strong>: <code>n => n > 10</code>。</li>
-        <li><strong>LINQ 查询</strong>: <code>list.Where(x => x.Active).OrderBy(x => x.Price)</code>。</li>
-      </ul>
-    `,
-    exercises: [
-      { title: "过滤订单", desc: "从 {1, 5, 12, 8} 中选出 > 10 的数字并打印", template: 'using System;\nusing System.Linq;\nclass Program { static void Main() { int[] nums = {1, 5, 12, 8}; /* 使用 LINQ */ } }', expected: "12" }
-    ]
-  },
-  {
-    title: "Day 9: 异常处理与文件 IO",
-    content: `
-      <h1>Day 9: 稳健性与持久化</h1>
-      <p>目标：掌握 Try-Catch 与文本读写。耗时：3 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>Try-Catch-Finally</strong>: 优雅处理错误。</li>
-        <li><strong>File 类</strong>: <code>ReadAllText</code>, <code>WriteAllText</code>。</li>
-      </ul>
-    `,
-    exercises: [
-      { title: "安全除法", desc: "在 catch 中打印 'Error' 捕获除零异常", template: 'using System;\nclass Program { static void Main() { try { int x=0; int y=1/x; } catch { /* 打印 */ } } }', expected: "Error" }
-    ]
-  },
-  {
-    title: "Day 10: 异步编程 (Async/Await)",
-    content: `
-      <h1>Day 10: 现代应用的灵魂</h1>
-      <p>目标：理解非阻塞调用。耗时：4 小时。</p>
-      <h2>核心知识点</h2>
-      <ul>
-        <li><strong>Task</strong>: 异步任务。</li>
-        <li><strong>Async/Await</strong>: 让异步代码像同步一样好写。</li>
-      </ul>
-    `,
-    exercises: [
-      { title: "简单异步", desc: "打印 'Start' 然后打印 'End'", template: 'using System;\nusing System.Threading.Tasks;\nclass Program { static async Task Main() { Console.WriteLine("Start"); /* 这里写代码 */ } }', expected: "Start\nEnd" }
-    ]
-  }
+  { title: "Day 3: 业务逻辑分支 (If/Else/Switch)", content: "<h1>第三章：程序的决策</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 4: 批量处理数据 (Arrays/Lists)", content: "<h1>第四章：告别繁琐</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 5: 模块化：封装你的逻辑", content: "<h1>第五章：方法与复用</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 6: 面向对象：建模业务实体", content: "<h1>第六章：类与对象</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 7: 解耦：接口与契约编程", content: "<h1>第七章：Interface 接口</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 8: 生产力：LINQ 数据查询", content: "<h1>第八章：像写 SQL 一样写 C#</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 9: 稳健性：异常处理与文件", content: "<h1>第九章：容错与存储</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] },
+  { title: "Day 10: 现代响应：异步编程", content: "<h1>第十章：Async/Await</h1><p>内容正在根据步进式原则重写中...</p>", exercises: [] }
 ];
 
 createApp({
@@ -346,7 +267,7 @@ createApp({
     const currentExercises = computed(() => syllabus[currentDay.value - 1]?.exercises || []);
     const activeExerciseTitle = computed(() => {
       const ex = currentExercises.value[activeExerciseIndex.value];
-      return ex ? `练习: ${ex.title}` : '代码编辑区';
+      return ex ? `正在练习: ${ex.title}` : '自由练习区';
     });
 
     const selectDay = (day) => {
@@ -363,6 +284,12 @@ createApp({
         outputText.value = '';
         validationStatus.value = null;
       }
+    };
+
+    const clearEditor = () => {
+      if (editor) editor.setValue('');
+      outputText.value = '';
+      validationStatus.value = null;
     };
 
     const runCode = async () => {
@@ -403,18 +330,15 @@ createApp({
     };
 
     onMounted(() => {
-      const el = document.getElementById('editor');
-      if (el) {
-        editor = CodeMirror.fromTextArea(el, {
-          mode: 'text/x-csharp',
-          theme: 'neo',
-          lineNumbers: true,
-          indentUnit: 4,
-          matchBrackets: true,
-          lineWrapping: true
-        });
-        loadExercise(0);
-      }
+      editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+        mode: 'text/x-csharp',
+        theme: 'neo',
+        lineNumbers: true,
+        indentUnit: 4,
+        matchBrackets: true,
+        lineWrapping: true
+      });
+      loadExercise(0);
     });
 
     return {
@@ -429,7 +353,8 @@ createApp({
       validationStatus,
       selectDay,
       loadExercise,
-      runCode
+      runCode,
+      clearEditor
     };
   }
 }).mount('#app');
